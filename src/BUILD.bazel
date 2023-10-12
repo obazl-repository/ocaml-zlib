@@ -1,0 +1,81 @@
+load(
+    "@rules_ocaml//build:rules.bzl",
+    "ocaml_library",
+    "ocaml_module",
+    "ocaml_signature",
+    "cc_selection_proxy",
+)
+
+exports_files(["zlib_stubs.c"]) # for test
+
+##################
+ocaml_library(
+    name = "zlib",
+    archived = True,
+    manifest = [":Zlib"],
+    visibility = ["//visibility:public"]
+)
+
+ocaml_signature(
+    name = "Zlib_cmi",
+    src  = "zlib.mli",
+)
+
+ocaml_module(
+    name = "Zlib",
+    struct  = "zlib.ml",
+    sig     = "Zlib_cmi",
+    opts    = ["-safe-string"],
+    deps    = [
+        "@bigarray//lib/bigarray",
+        ":dllzlib_stubs.so",
+        ":zlib_stubs"
+    ],
+)
+
+cc_library(
+    name = "zlib_stubs",
+    srcs = [
+        "zlib_stubs.c",
+    ],
+    copts = ["-std=c99",
+             "-Iexternal/ocaml~0.0.0/lib/sdk"],
+    deps  = [
+        "@zlib//:zlib",
+        "@ocaml//lib/sdk",
+    ],
+)
+
+cc_binary(
+    name = "dllzlib_stubs.so",
+    linkshared = True,
+    linkopts = [
+        # "-Xlinker", "-v",
+        # "-Xlinker", "-t",
+    ],
+    deps = ["@zlib//:zlib"],
+    srcs = [":zlib_stubs"],
+)
+
+# cc_shared_library(
+#     name = "zlib_stubs",
+#     linkstatic = False,
+#     # shared_lib_name = select({
+#     #     "@platforms//os:macos": "dllzlib_stubs.so",
+#     #     "@platforms//os:linux": "dllzlib_stubs.so",
+#     #     # "@platforms//os:windows": "dllzlib_stubs.dll",
+#     #     "//conditions:default": "dllzlib_stubs.so"
+#     # }),
+#     srcs = [
+#         "@ocaml//lib/sdk",
+#         ":zlib_stubs_static",
+#         "@zlib//:zlib",
+#         # "@ocaml//runtime:ocamloptcomp",
+#         # "@ocaml//runtime:ocamlcommon",
+#         # "@ocaml//runtime:stdlib",
+#         "@ocaml//runtime:libasmrun.a",
+#     ],
+#     # user_link_flags = ["-v"]
+#     # visibility = ["//visibility:public"]
+# )
+

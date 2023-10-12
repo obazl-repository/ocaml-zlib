@@ -1,2 +1,8 @@
+.bazelignore
+.bazeliskrc
+.bazelversion
+.bazel
+bazel-*
+
 _build
 .merlin

@@ -1,0 +1,31 @@
+module(
+    name = "ocaml-zlib",
+    version = "0.6.0",
+    compatibility_level = 0,
+    bazel_compatibility = [">=6.0.0"]
+)
+
+## bcr deps:
+bazel_dep(name = "platforms",    version = "0.0.7")
+bazel_dep(name = "bazel_skylib", version = "1.4.2")
+
+## warning: only provides static libzlib.a
+bazel_dep(name = "zlib", version = "1.3")
+
+## obazl deps:
+bazel_dep(name = "cc_config",    version = "2.0.0")
+bazel_dep(name = "rules_ocaml",  version = "2.0.0")
+
+## coswitch deps:
+bazel_dep(name = "ocaml",           version = "0.0.0")
+register_toolchains("@ocaml//toolchain/selectors/local:all")
+register_toolchains("@ocaml//toolchain/profiles:all")
+
+bazel_dep(name = "bigarray", version = "0.0.0")
+
+## testing only:
+bazel_dep(name = "unix", version = "0.0.0",
+          dev_dependency = True)
+
+bazel_dep(name = "obazl",           version = "1.0.0",
+          dev_dependency = True)

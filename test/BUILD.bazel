@@ -1,0 +1,39 @@
+load("@rules_ocaml//build:rules.bzl",
+     "ocaml_binary",
+     "ocaml_module",
+     "ocaml_test")
+
+
+ocaml_test(
+    name = "test",
+    main = "Test",
+    args = ["$(location //src:zlib_stubs.c)"],
+    data = ["//src:zlib_stubs.c"],
+    timeout = "short",
+    # opts = ["-verbose",
+    #         # "-custom"
+    #         # "-dllib", "-lzlib_stubs"
+    #         ]
+)
+
+ocaml_binary(
+    name = "test.exe",
+    main = "Test",
+    opts = ["-verbose",
+            "-ccopt", "-Xlinker", "-ccopt", "-v",
+            "-ccopt", "-Xlinker", "-ccopt", "-t",
+            ],
+    args = ["$(location //src:zlib_stubs.c)"],
+    data = ["//src:zlib_stubs.c"],
+)
+
+ocaml_module(
+    name = "Test",
+    struct  = "test.ml",
+    opts    = ["-safe-string"],
+    deps    = [
+        "@unix//lib/unix",
+        "//src:zlib",
+    ]
+)
+
